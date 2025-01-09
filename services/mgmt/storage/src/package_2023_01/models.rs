@@ -5309,7 +5309,9 @@ pub mod storage_account_key {
     #[doc = "Permissions for the key -- read-only or full permissions."]
     #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
     pub enum Permissions {
+        #[serde(alias = "read", alias = "READ", alias = "Read")]
         Read,
+        #[serde(alias = "full", alias = "FULL", alias = "Full")]
         Full,
     }
 }
