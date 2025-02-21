@@ -12,6 +12,7 @@ use time::{
 };
 
 // Serde modules
+use serde::{Deserialize, Deserializer};
 pub use time::serde::rfc3339;
 pub use time::serde::timestamp;
 pub mod iso8601;
@@ -134,6 +135,15 @@ pub fn diff(first: OffsetDateTime, second: OffsetDateTime) -> Duration {
     (first - second).unsigned_abs()
 }
 
+pub fn parse_rfc3339_option<'de, D>(deserializer: D) -> Result<Option<OffsetDateTime>, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let opt = Option::<String>::deserialize(deserializer)?;
+
+    Ok(opt.and_then(|s| OffsetDateTime::parse(&s, &Rfc3339).ok()))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -231,5 +241,29 @@ mod tests {
         );
 
         Ok(())
+    }
+
+    #[derive(Debug, Serialize, Deserialize)]
+    struct MyStruct {
+        #[serde(deserialize_with = "parse_rfc3339_option", default)]
+        timestamp: Option<time::OffsetDateTime>,
+    }
+
+    #[test]
+    fn test() {
+        let valid_json = r#"{ "timestamp": "2024-12-09T09:18:17.2672044Z" }"#;
+        let invalid_json = r#"{ "timestamp": "invalid-date" }"#;
+        let missing_json = r#"{ }"#;
+
+        let valid: MyStruct = serde_json::from_str(valid_json).unwrap();
+        let invalid: MyStruct = serde_json::from_str(invalid_json).unwrap();
+        let missing: MyStruct = serde_json::from_str(missing_json).unwrap();
+
+        println!("Valid: {:?}", valid.timestamp);
+        assert!(valid.timestamp.is_some());
+        println!("Invalid: {:?}", invalid.timestamp);
+        assert_eq!(invalid.timestamp, None);
+        println!("Missing: {:?}", missing.timestamp);
+        assert_eq!(missing.timestamp, None)
     }
 }
