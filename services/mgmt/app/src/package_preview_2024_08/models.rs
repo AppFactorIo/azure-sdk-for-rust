@@ -4,6 +4,7 @@ use serde::de::{value, Deserializer, IntoDeserializer};
 use serde::{Deserialize, Serialize, Serializer};
 use std::str::FromStr;
 use std::collections::HashMap;
+use azure_core::date::parse_rfc3339_option;
 
 #[doc = "The configuration settings of the Allowed Audiences validation flow."]
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, Default)]
@@ -9488,8 +9489,7 @@ pub struct SystemData {
     #[serde(rename = "createdByType", default, skip_serializing_if = "Option::is_none")]
     pub created_by_type: Option<system_data::CreatedByType>,
     #[doc = "The timestamp of resource creation (UTC)."]
-    // #[serde(rename = "createdAt", default, with = "azure_core::date::rfc3339::option")]
-    #[serde(skip_deserializing)] //todo found some issues, FIX rfc3339
+    #[serde(rename = "createdAt", deserialize_with = "parse_rfc3339_option", default)]
     pub created_at: Option<::time::OffsetDateTime>,
     #[doc = "The identity that last modified the resource."]
     #[serde(rename = "lastModifiedBy", default, skip_serializing_if = "Option::is_none")]
@@ -9498,8 +9498,7 @@ pub struct SystemData {
     #[serde(rename = "lastModifiedByType", default, skip_serializing_if = "Option::is_none")]
     pub last_modified_by_type: Option<system_data::LastModifiedByType>,
     #[doc = "The timestamp of resource last modification (UTC)"]
-    // #[serde(rename = "lastModifiedAt", default, with = "azure_core::date::rfc3339::option")]
-    #[serde(skip_deserializing)] //todo found some issues, FIX rfc3339
+    #[serde(rename = "lastModifiedAt", deserialize_with = "parse_rfc3339_option", default)]
     pub last_modified_at: Option<::time::OffsetDateTime>,
 }
 impl SystemData {
