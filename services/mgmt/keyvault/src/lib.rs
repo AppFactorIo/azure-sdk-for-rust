@@ -7,8 +7,6 @@
 #![allow(rustdoc::bare_urls)]
 #![allow(rustdoc::invalid_html_tags)]
 #![allow(rustdoc::broken_intra_doc_links)]
-#[cfg(feature = "package-preview-2021-04-full")]
-pub mod package_preview_2021_04_full;
 #[cfg(feature = "package-preview-2021-06")]
 pub mod package_preview_2021_06;
 #[cfg(feature = "package-preview-2021-11")]
